@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**").permitAll()
                         .requestMatchers("/ingredients/**").permitAll()
                         .requestMatchers("/recipes/**").permitAll()
+                        .requestMatchers("/comments/**").permitAll()
+                        .requestMatchers("/favorites/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
