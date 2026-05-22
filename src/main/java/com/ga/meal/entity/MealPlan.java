@@ -1,6 +1,7 @@
 package com.ga.meal.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class MealPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Meal plan title is required")
     private String title;
 
     private LocalDate startDate;

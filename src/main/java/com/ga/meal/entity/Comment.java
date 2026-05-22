@@ -1,6 +1,7 @@
 package com.ga.meal.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class Comment {
     private Long id;
 
     @Column(columnDefinition = "TEXT", nullable = false)
+    @NotBlank(message = "Comment text is required")
     private String commentText;
 
     @ManyToOne

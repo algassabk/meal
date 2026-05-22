@@ -1,6 +1,7 @@
 package com.ga.meal.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -17,6 +18,7 @@ public class Ingredient {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Ingredient name is required")
     private String name;
 
     private String unit;

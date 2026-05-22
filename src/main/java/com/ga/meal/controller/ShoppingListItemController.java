@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.ShoppingListItem;
 import com.ga.meal.service.ShoppingListItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ShoppingListItemController {
     public ShoppingListItem addItemToShoppingList(
             @PathVariable Long shoppingListId,
             @PathVariable Long ingredientId,
-            @RequestBody ShoppingListItem shoppingListItem
+            @Valid @RequestBody ShoppingListItem shoppingListItem
     ) {
         return shoppingListItemService.addItemToShoppingList(
                 shoppingListId,
@@ -35,7 +36,7 @@ public class ShoppingListItemController {
     @PutMapping("/{shoppingListItemId}")
     public ShoppingListItem updateShoppingListItem(
             @PathVariable Long shoppingListItemId,
-            @RequestBody ShoppingListItem shoppingListItem
+            @Valid @RequestBody ShoppingListItem shoppingListItem
     ) {
         return shoppingListItemService.updateShoppingListItem(
                 shoppingListItemId,

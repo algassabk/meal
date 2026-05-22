@@ -1,9 +1,29 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:16
+    container_name: meal-postgres
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: meal_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
     ports:
-      - '5432'
+      - "5432:5432"
+    volumes:
+      - meal_postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: meal-app
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/meal_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  meal_postgres_data:

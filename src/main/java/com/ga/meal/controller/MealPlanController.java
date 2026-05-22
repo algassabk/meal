@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.MealPlan;
 import com.ga.meal.service.MealPlanService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class MealPlanController {
     private final MealPlanService mealPlanService;
 
     @PostMapping
-    public MealPlan createMealPlan(@RequestBody MealPlan mealPlan) {
+    public MealPlan createMealPlan(@Valid @RequestBody MealPlan mealPlan) {
         return mealPlanService.createMealPlan(mealPlan);
     }
 
@@ -32,7 +33,7 @@ public class MealPlanController {
     @PutMapping("/{id}")
     public MealPlan updateMealPlan(
             @PathVariable Long id,
-            @RequestBody MealPlan mealPlan
+            @Valid @RequestBody MealPlan mealPlan
     ) {
         return mealPlanService.updateMealPlan(id, mealPlan);
     }

@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.Category;
 import com.ga.meal.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class CategoryController {
      * Creates category.
      */
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public Category createCategory(@Valid @RequestBody Category category) {
         return categoryService.createCategory(category);
     }
 
@@ -44,7 +45,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     public Category updateCategory(
             @PathVariable Long id,
-            @RequestBody Category category
+            @Valid @RequestBody Category category
     ) {
         return categoryService.updateCategory(id, category);
     }

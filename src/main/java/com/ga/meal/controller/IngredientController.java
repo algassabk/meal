@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.Ingredient;
 import com.ga.meal.service.IngredientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
     @PostMapping
-    public Ingredient createIngredient(@RequestBody Ingredient ingredient) {
+    public Ingredient createIngredient(@Valid @RequestBody Ingredient ingredient) {
         return ingredientService.createIngredient(ingredient);
     }
 
@@ -32,7 +33,7 @@ public class IngredientController {
     @PutMapping("/{id}")
     public Ingredient updateIngredient(
             @PathVariable Long id,
-            @RequestBody Ingredient ingredient
+            @Valid @RequestBody Ingredient ingredient
     ) {
         return ingredientService.updateIngredient(id, ingredient);
     }

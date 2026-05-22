@@ -1,6 +1,7 @@
 package com.ga.meal.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class RecipeIngredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @PositiveOrZero(message = "Quantity cannot be negative")
     private BigDecimal quantity;
 
     @ManyToOne

@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.MealPlanItem;
 import com.ga.meal.service.MealPlanItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class MealPlanItemController {
     public MealPlanItem addRecipeToMealPlan(
             @PathVariable Long mealPlanId,
             @PathVariable Long recipeId,
-            @RequestBody MealPlanItem mealPlanItem
+            @Valid @RequestBody MealPlanItem mealPlanItem
     ) {
         return mealPlanItemService.addRecipeToMealPlan(
                 mealPlanId,

@@ -2,6 +2,7 @@ package com.ga.meal.controller;
 
 import com.ga.meal.entity.Comment;
 import com.ga.meal.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class CommentController {
     @PostMapping("/recipe/{recipeId}")
     public Comment addComment(
             @PathVariable Long recipeId,
-            @RequestBody Comment comment
+            @Valid @RequestBody Comment comment
     ) {
         return commentService.addComment(recipeId, comment);
     }
@@ -30,7 +31,7 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public Comment updateComment(
             @PathVariable Long commentId,
-            @RequestBody Comment comment
+            @Valid @RequestBody Comment comment
     ) {
         return commentService.updateComment(commentId, comment);
     }
