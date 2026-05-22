@@ -26,4 +26,8 @@ public class UserService {
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
     }
+
+    public User getMyProfile() {
+        return getCurrentUser();
+    }
 }

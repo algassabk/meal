@@ -19,4 +19,9 @@ public class UserController {
     public User getCurrentUser() {
         return userService.getCurrentUser();
     }
+
+    @GetMapping("/profile")
+    public User getMyProfile() {
+        return userService.getMyProfile();
+    }
 }
