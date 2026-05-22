@@ -48,4 +48,11 @@ public class RecipeController {
     public List<Recipe> searchRecipes(@RequestParam String keyword) {
         return recipeService.searchRecipes(keyword);
     }
+
+    @GetMapping("/category/{categoryId}")
+    public List<Recipe> getRecipesByCategory(
+            @PathVariable Long categoryId
+    ) {
+        return recipeService.getRecipesByCategory(categoryId);
+    }
 }

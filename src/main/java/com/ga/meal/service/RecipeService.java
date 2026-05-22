@@ -78,6 +78,10 @@ public class RecipeService {
         return recipeRepository.findByTitleContainingIgnoreCase(keyword);
     }
 
+    public List<Recipe> getRecipesByCategory(Long categoryId) {
+        return recipeRepository.findByCategoryId(categoryId);
+    }
+
     public void deleteRecipe(Long id) {
         Recipe recipe = getRecipeById(id);
         User currentUser = userService.getCurrentUser();
