@@ -36,6 +36,8 @@ public class Recipe {
 
     private String imageUrl;
 
+    private Boolean isPublic = true;
+
     @Enumerated(EnumType.STRING)
     private RecipeStatus status = RecipeStatus.PENDING;
 

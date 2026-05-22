@@ -55,4 +55,12 @@ public class RecipeController {
     ) {
         return recipeService.getRecipesByCategory(categoryId);
     }
+
+    @PutMapping("/{id}/visibility")
+    public Recipe updateRecipeVisibility(
+            @PathVariable Long id,
+            @RequestParam Boolean isPublic
+    ) {
+        return recipeService.updateRecipeVisibility(id, isPublic);
+    }
 }

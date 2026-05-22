@@ -82,6 +82,19 @@ public class RecipeService {
         return recipeRepository.findByCategoryId(categoryId);
     }
 
+    public Recipe updateRecipeVisibility(Long id, Boolean isPublic) {
+        Recipe recipe = getRecipeById(id);
+        User currentUser = userService.getCurrentUser();
+
+        if (!recipe.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("You can only update your own recipe visibility");
+        }
+
+        recipe.setIsPublic(isPublic);
+
+        return recipeRepository.save(recipe);
+    }
+
     public void deleteRecipe(Long id) {
         Recipe recipe = getRecipeById(id);
         User currentUser = userService.getCurrentUser();
@@ -92,4 +105,5 @@ public class RecipeService {
 
         recipeRepository.delete(recipe);
     }
+
 }
