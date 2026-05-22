@@ -43,4 +43,9 @@ public class RecipeController {
         recipeService.deleteRecipe(id);
         return "Recipe deleted successfully";
     }
+
+    @GetMapping("/search")
+    public List<Recipe> searchRecipes(@RequestParam String keyword) {
+        return recipeService.searchRecipes(keyword);
+    }
 }
