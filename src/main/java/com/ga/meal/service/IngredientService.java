@@ -30,6 +30,7 @@ public class IngredientService {
         Ingredient ingredient = getIngredientById(id);
 
         ingredient.setName(updatedIngredient.getName());
+        ingredient.setUnit(updatedIngredient.getUnit());
 
         return ingredientRepository.save(ingredient);
     }

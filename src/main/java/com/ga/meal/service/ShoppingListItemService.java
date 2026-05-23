@@ -48,6 +48,8 @@ public class ShoppingListItemService {
                 .orElseThrow(() -> new RuntimeException("Shopping list item not found"));
 
         shoppingListItem.setQuantity(updatedShoppingListItem.getQuantity());
+        shoppingListItem.setUnit(updatedShoppingListItem.getUnit());
+        shoppingListItem.setIsChecked(updatedShoppingListItem.getIsChecked());
 
         return shoppingListItemRepository.save(shoppingListItem);
     }

@@ -1,0 +1,379 @@
+{
+  "info": {
+    "name": "Meal API",
+    "description": "Postman collection for the Meal Spring Boot backend. Run requests in order and save returned ids/tokens into collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "categoryId", "value": "1" },
+    { "key": "ingredientId", "value": "1" },
+    { "key": "recipeId", "value": "1" },
+    { "key": "recipeIngredientId", "value": "1" },
+    { "key": "favoriteId", "value": "1" },
+    { "key": "commentId", "value": "1" },
+    { "key": "mealPlanId", "value": "1" },
+    { "key": "mealPlanItemId", "value": "1" },
+    { "key": "shoppingListId", "value": "1" },
+    { "key": "shoppingListItemId", "value": "1" },
+    { "key": "verificationToken", "value": "" },
+    { "key": "passwordResetToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('userToken', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Email Verification Request",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/email-verification/request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/email-verification/verify?token={{verificationToken}}"
+          }
+        },
+        {
+          "name": "Password Reset Request",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/password-reset/request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Password Reset Confirm",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/password-reset/confirm",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"newPassword\": \"newpass123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Current User",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/users/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/categories",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Dinner\",\n  \"description\": \"Dinner recipes\"\n}" }
+          }
+        },
+        { "name": "Get Categories", "request": { "method": "GET", "url": "{{baseUrl}}/categories" } },
+        { "name": "Get Category By Id", "request": { "method": "GET", "url": "{{baseUrl}}/categories/{{categoryId}}" } },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/categories/{{categoryId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Dinner Updated\",\n  \"description\": \"Updated description\"\n}" }
+          }
+        },
+        { "name": "Delete Category", "request": { "method": "DELETE", "url": "{{baseUrl}}/categories/{{categoryId}}" } }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Create Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/recipes",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Tomato Pasta\",\n  \"description\": \"Simple pasta recipe\",\n  \"instructions\": \"Boil pasta and cook sauce.\",\n  \"prepTime\": 10,\n  \"cookTime\": 20,\n  \"servings\": 2,\n  \"imageUrl\": \"\",\n  \"categoryId\": {{categoryId}}\n}" }
+          }
+        },
+        { "name": "Get Recipes", "request": { "method": "GET", "url": "{{baseUrl}}/recipes" } },
+        { "name": "Get Recipes Paged", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/paged?page=0&size=5&sortBy=createdAt&direction=desc" } },
+        { "name": "Get Recipe By Id", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/{{recipeId}}" } },
+        { "name": "Search Recipes", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/search?keyword=Tomato" } },
+        { "name": "Search Recipes Paged", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/search/paged?keyword=Tomato&page=0&size=5" } },
+        { "name": "Filter By Category", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/category/{{categoryId}}" } },
+        { "name": "Filter By Category Paged", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/category/{{categoryId}}/paged?page=0&size=5" } },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/recipes/{{recipeId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Tomato Pasta Updated\",\n  \"description\": \"Updated recipe\",\n  \"instructions\": \"Cook again.\",\n  \"prepTime\": 12,\n  \"cookTime\": 22,\n  \"servings\": 3,\n  \"imageUrl\": \"\",\n  \"categoryId\": {{categoryId}}\n}" }
+          }
+        },
+        {
+          "name": "Update Recipe Visibility",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "PUT",
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/visibility?isPublic=true"
+          }
+        },
+        {
+          "name": "Upload Recipe Image",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/image",
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": [] }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ingredients",
+      "item": [
+        {
+          "name": "Create Ingredient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/ingredients",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tomato\",\n  \"unit\": \"piece\"\n}" }
+          }
+        },
+        { "name": "Get Ingredients", "request": { "method": "GET", "url": "{{baseUrl}}/ingredients" } },
+        { "name": "Get Ingredient By Id", "request": { "method": "GET", "url": "{{baseUrl}}/ingredients/{{ingredientId}}" } },
+        {
+          "name": "Update Ingredient",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/ingredients/{{ingredientId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tomato Updated\",\n  \"unit\": \"gram\"\n}" }
+          }
+        },
+        { "name": "Delete Ingredient", "request": { "method": "DELETE", "url": "{{baseUrl}}/ingredients/{{ingredientId}}" } }
+      ]
+    },
+    {
+      "name": "Recipe Ingredients",
+      "item": [
+        {
+          "name": "Add Ingredient To Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{ingredientId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 2\n}" }
+          }
+        },
+        { "name": "Get Recipe Ingredients", "request": { "method": "GET", "url": "{{baseUrl}}/recipes/{{recipeId}}/ingredients" } },
+        {
+          "name": "Update Recipe Ingredient",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{recipeIngredientId}}/{{ingredientId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 3\n}" }
+          }
+        },
+        {
+          "name": "Delete Recipe Ingredient",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{recipeIngredientId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Social",
+      "item": [
+        {
+          "name": "Favorite Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "url": "{{baseUrl}}/favorites/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Get My Favorites",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/favorites"
+          }
+        },
+        {
+          "name": "Add Comment",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/comments/recipe/{{recipeId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"commentText\": \"Looks delicious!\"\n}" }
+          }
+        },
+        { "name": "Get Recipe Comments", "request": { "method": "GET", "url": "{{baseUrl}}/comments/recipe/{{recipeId}}" } }
+      ]
+    },
+    {
+      "name": "Meal Plans And Shopping",
+      "item": [
+        {
+          "name": "Create Meal Plan",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/meal-plans",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Weekly Meal Plan\",\n  \"startDate\": \"2026-05-23\",\n  \"endDate\": \"2026-05-30\"\n}" }
+          }
+        },
+        {
+          "name": "Add Meal Plan Item",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/meal-plan-items/{{mealPlanId}}/{{recipeId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"plannedDate\": \"2026-05-24\",\n  \"mealType\": \"DINNER\"\n}" }
+          }
+        },
+        {
+          "name": "Create Shopping List",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/shopping-lists",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Weekly Shopping List\",\n  \"mealPlan\": {\n    \"id\": {{mealPlanId}}\n  }\n}" }
+          }
+        },
+        {
+          "name": "Add Shopping List Item",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/shopping-list-items/{{shoppingListId}}/{{ingredientId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 4,\n  \"unit\": \"piece\",\n  \"isChecked\": false\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Pending Recipes",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/recipes/pending"
+          }
+        },
+        {
+          "name": "Admin Approve Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/recipes/{{recipeId}}/approve"
+          }
+        },
+        {
+          "name": "Admin Delete Recipe",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": "{{baseUrl}}/admin/recipes/{{recipeId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Swagger",
+      "item": [
+        { "name": "OpenAPI JSON", "request": { "method": "GET", "url": "{{baseUrl}}/v3/api-docs" } },
+        { "name": "Swagger UI", "request": { "method": "GET", "url": "{{baseUrl}}/swagger-ui.html" } }
+      ]
+    }
+  ]
+}
