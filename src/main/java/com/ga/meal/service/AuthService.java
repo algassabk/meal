@@ -57,9 +57,6 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    /**
-     * Logs in user.
-     */
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
