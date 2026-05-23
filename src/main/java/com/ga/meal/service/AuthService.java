@@ -66,6 +66,10 @@ public class AuthService {
             throw new RuntimeException("User account is inactive");
         }
 
+        if (!Boolean.TRUE.equals(user.getIsEmailVerified())) {
+            throw new RuntimeException("Please verify your email before logging in.");
+        }
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }

@@ -12,11 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,6 +57,8 @@ class MealApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
 
+        verifyUserEmail(email);
+
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of(
@@ -63,6 +67,29 @@ class MealApplicationTests {
                         ))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
+    }
+
+    @Test
+    void unverifiedUserCannotLogin() throws Exception {
+        String email = "unverified-user-" + System.currentTimeMillis() + "@example.com";
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "fullName", "Unverified User",
+                                "email", email,
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "email", email,
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Please verify your email before logging in."));
     }
 
     @Test
@@ -96,6 +123,8 @@ class MealApplicationTests {
                         ))))
                 .andExpect(status().isOk());
 
+        verifyUserEmail(email);
+
         String token = loginAndGetToken(email, "password123");
 
         mockMvc.perform(put("/users/change-password")
@@ -115,6 +144,65 @@ class MealApplicationTests {
                         ))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
+    }
+
+    @Test
+    void loggedInUserCanUpdateProfile() throws Exception {
+        String email = "profile-user-" + System.currentTimeMillis() + "@example.com";
+        String newEmail = "updated-profile-user-" + System.currentTimeMillis() + "@example.com";
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "fullName", "Profile User",
+                                "email", email,
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isOk());
+
+        verifyUserEmail(email);
+        String token = loginAndGetToken(email, "password123");
+
+        mockMvc.perform(put("/users/profile")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "fullName", "Updated Profile User",
+                                "email", newEmail
+                        ))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullName").value("Updated Profile User"))
+                .andExpect(jsonPath("$.email").value(newEmail));
+    }
+
+    @Test
+    void loggedInUserCanUploadProfilePicture() throws Exception {
+        String email = "profile-picture-" + System.currentTimeMillis() + "@example.com";
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "fullName", "Picture User",
+                                "email", email,
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isOk());
+
+        verifyUserEmail(email);
+        String token = loginAndGetToken(email, "password123");
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "profile.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "fake-image-content".getBytes()
+        );
+
+        mockMvc.perform(multipart("/users/profile-picture")
+                        .file(file)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.profilePicture").exists());
     }
 
     @Test
@@ -173,5 +261,13 @@ class MealApplicationTests {
 
         JsonNode jsonNode = objectMapper.readTree(response);
         return jsonNode.get("token").asText();
+    }
+
+    private void verifyUserEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setIsEmailVerified(true);
+        userRepository.save(user);
     }
 }
