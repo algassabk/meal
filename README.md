@@ -109,6 +109,33 @@ OpenAPI JSON:
 http://localhost:8080/v3/api-docs
 ```
 
+## React Frontend
+
+A simple React/Vite frontend is available in the `frontend` folder.
+
+Start the backend first:
+
+```powershell
+cd C:\Users\algas\jdb\projects\meal
+.\mvnw.cmd spring-boot:run
+```
+
+Start the frontend:
+
+```powershell
+cd C:\Users\algas\jdb\projects\meal\frontend
+npm install
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+The frontend uses a Vite proxy, so API calls go from `/api` to `http://localhost:8080`. Login stores the JWT token in `localStorage`, and protected requests send it in the `Authorization` header.
+
 ## Test
 
 Run unit/context tests:

@@ -20,6 +20,13 @@ public class IngredientController {
         return ingredientService.createIngredient(ingredient);
     }
 
+    @PostMapping("/bulk")
+    public List<Ingredient> createBulkIngredients(
+            @RequestBody List<Ingredient> ingredients
+    ) {
+        return ingredientService.createBulkIngredients(ingredients);
+    }
+
     @GetMapping
     public List<Ingredient> getAllIngredients() {
         return ingredientService.getAllIngredients();

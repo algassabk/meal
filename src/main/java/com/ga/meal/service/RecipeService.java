@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,23 +41,20 @@ public class RecipeService {
     public Recipe createRecipe(RecipeRequest request) {
         User currentUser = userService.getCurrentUser();
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
-        Recipe recipe = Recipe.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .instructions(request.getInstructions())
-                .prepTime(request.getPrepTime())
-                .cookTime(request.getCookTime())
-                .servings(request.getServings())
-                .imageUrl(request.getImageUrl())
-                .status(RecipeStatus.PENDING)
-                .user(currentUser)
-                .category(category)
-                .build();
+        Recipe recipe = buildRecipeFromRequest(request, currentUser);
 
         return recipeRepository.save(recipe);
+    }
+
+    public List<Recipe> createBulkRecipes(List<RecipeRequest> requests) {
+        User currentUser = userService.getCurrentUser();
+        List<Recipe> recipes = new ArrayList<>();
+
+        for (RecipeRequest request : requests) {
+            recipes.add(buildRecipeFromRequest(request, currentUser));
+        }
+
+        return recipeRepository.saveAll(recipes);
     }
 
     public List<Recipe> getAllRecipes() {
@@ -196,5 +194,23 @@ public class RecipeService {
         commentRepository.deleteByRecipeId(recipeId);
         recipeIngredientRepository.deleteByRecipeId(recipeId);
         mealPlanItemRepository.deleteByRecipeId(recipeId);
+    }
+
+    private Recipe buildRecipeFromRequest(RecipeRequest request, User user) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        return Recipe.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .instructions(request.getInstructions())
+                .prepTime(request.getPrepTime())
+                .cookTime(request.getCookTime())
+                .servings(request.getServings())
+                .imageUrl(request.getImageUrl())
+                .status(RecipeStatus.PENDING)
+                .user(user)
+                .category(category)
+                .build();
     }
 }

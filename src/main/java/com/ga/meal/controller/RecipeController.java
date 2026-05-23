@@ -25,6 +25,13 @@ public class RecipeController {
         return recipeService.createRecipe(request);
     }
 
+    @PostMapping("/bulk")
+    public List<Recipe> createBulkRecipes(
+            @Valid @RequestBody List<RecipeRequest> requests
+    ) {
+        return recipeService.createBulkRecipes(requests);
+    }
+
     @GetMapping
     public List<Recipe> getAllRecipes() {
         return recipeService.getAllRecipes();
@@ -120,4 +127,5 @@ public class RecipeController {
 
         return PageRequest.of(page, size, sort);
     }
+    
 }
