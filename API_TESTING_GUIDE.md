@@ -49,6 +49,22 @@ Use this order in Postman. Save the login token as `userToken`, and for admin te
 - Auth: Bearer `userToken`
 - Expected: `200 OK`, current user object.
 
+## 3A. Change Password
+
+- Method: `PUT`
+- URL: `/users/change-password`
+- Auth: Bearer `userToken`
+- Body:
+
+```json
+{
+  "currentPassword": "password123",
+  "newPassword": "newpass123"
+}
+```
+
+- Expected: `200 OK`, `Password changed successfully`.
+
 ## 4. Create Category
 
 - Method: `POST`
@@ -295,7 +311,13 @@ Use this order in Postman. Save the login token as `userToken`, and for admin te
 
 ## 22. Admin Setup
 
-Register an admin test user, then update the database:
+Use the seeded admin user:
+
+```text
+admin@meal.com / admin123
+```
+
+Or register an admin test user, then update the database:
 
 ```sql
 UPDATE users SET role = 'ADMIN' WHERE email = 'admin@example.com';
@@ -323,6 +345,14 @@ Login as that admin and save the JWT as `adminToken`.
 - URL: `/admin/recipes/{{recipeId}}`
 - Auth: Bearer `adminToken`
 - Expected: `200 OK`.
+
+## 26. Admin Soft Delete User
+
+- Method: `PUT`
+- URL: `/admin/users/{{userId}}/deactivate`
+- Auth: Bearer `adminToken`
+- Expected: `200 OK`, user response has `"userStatus": "INACTIVE"`.
+- After this, that user cannot log in.
 
 ## Other Useful Checks
 

@@ -18,6 +18,7 @@ Recipe and Meal Prep Social Platform backend built with Spring Boot. The API sup
 ## Features
 
 - Register and login with JWT
+- Logged-in user change password
 - Current logged-in user profile
 - Categories CRUD
 - Ingredients CRUD
@@ -29,12 +30,14 @@ Recipe and Meal Prep Social Platform backend built with Spring Boot. The API sup
 - Comments
 - Meal plans and meal plan items
 - Shopping lists and shopping list items
-- Admin recipe pending list, approval, and delete
+- Admin recipe pending list, approval, recipe delete, and user deactivate
 - Recipe image upload with static `/uploads/**` access
 - Email verification token flow
 - Password reset token flow
 - Global validation and runtime exception responses
 - Swagger/OpenAPI documentation
+- Spring profiles for local development and Docker
+- First-run seed data for categories, ingredients, and an admin user
 
 ## Setup
 
@@ -44,17 +47,43 @@ Create a PostgreSQL database:
 CREATE DATABASE meal_db;
 ```
 
-Default local database settings are in `src/main/resources/application.properties`:
+Common settings are in `src/main/resources/application.properties`.
+
+Local development database settings are in `src/main/resources/application-dev.properties`:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/meal_db
 spring.datasource.username=postgres
 spring.datasource.password=12345678
+```
+
+Docker database settings are in `src/main/resources/application-docker.properties`. Docker Compose sets:
+
+```properties
+SPRING_PROFILES_ACTIVE=docker
+```
+
+The app uses the `dev` profile by default:
+
+```properties
+spring.profiles.active=dev
 spring.jpa.hibernate.ddl-auto=update
 server.port=8080
 ```
 
 Update these values if your local PostgreSQL username or password is different.
+
+## Seed Data
+
+On first run, the app seeds:
+
+- Categories: Breakfast, Lunch, Dinner
+- Ingredients: Rice, Chicken, Tomato
+- Admin user:
+  - Email: `admin@meal.com`
+  - Password: `admin123`
+
+This is for local capstone testing only.
 
 ## Run Locally
 
@@ -133,6 +162,7 @@ Users:
 
 - `GET /users/me`
 - `GET /users/profile`
+- `PUT /users/change-password`
 
 Categories:
 
@@ -219,6 +249,7 @@ Admin:
 - `GET /admin/recipes/pending`
 - `PUT /admin/recipes/{id}/approve`
 - `DELETE /admin/recipes/{id}`
+- `PUT /admin/users/{id}/deactivate`
 
 ## Auth Notes
 
@@ -230,4 +261,10 @@ For local admin testing, register a user and update the database role:
 
 ```sql
 UPDATE users SET role = 'ADMIN' WHERE email = 'admin@example.com';
+```
+
+You can also use the seeded admin user:
+
+```text
+admin@meal.com / admin123
 ```
