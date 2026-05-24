@@ -1,0 +1,4966 @@
+{
+  "info": {
+    "_postman_id": "f5f22e9c-c6a4-4ea0-8a23-meal-api-ga-capstone",
+    "name": "Meal API - Spring Boot Backend",
+    "description": "Professional Postman collection for the Spring Boot Meal API. Run folders in order. The collection saves JWT tokens and IDs into collection variables for later requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get(\"runSuffix\")) {",
+          "  const suffix = Date.now();",
+          "  pm.collectionVariables.set(\"runSuffix\", suffix);",
+          "  pm.collectionVariables.set(\"userEmail\", `user-${suffix}@example.com`);",
+          "  pm.collectionVariables.set(\"secondUserEmail\", `second-user-${suffix}@example.com`);",
+          "  pm.collectionVariables.set(\"updatedUserEmail\", `updated-user-${suffix}@example.com`);",
+          "  pm.collectionVariables.set(\"password\", \"password123\");",
+          "  pm.collectionVariables.set(\"newPassword\", \"newpass123\");",
+          "  pm.collectionVariables.set(\"adminEmail\", \"admin@meal.com\");",
+          "  pm.collectionVariables.set(\"adminPassword\", \"admin123\");",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "runSuffix",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secondUserEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "updatedUserEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password123",
+      "type": "string"
+    },
+    {
+      "key": "newPassword",
+      "value": "newpass123",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "emailVerificationToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "passwordResetToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "categoryId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ingredientId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recipeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recipeIngredientId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "favoriteId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mealPlanId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mealPlanItemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shoppingListId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shoppingListItemId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Postman Test User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"JWT is returned on register\", function () { pm.expect(pm.response.json().token).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"jwt-token-here\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login Before Email Verification - Error Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Clear email verification message\", function () { pm.expect(pm.response.json().error).to.eql(\"Please verify your email before logging in.\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Email Not Verified",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Please verify your email before logging in.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Email Verification Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/email-verification/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "email-verification",
+                "request"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Verification token returned\", function () { pm.expect(pm.response.text()).to.include(\"Email verification token:\"); });",
+                  "const token = pm.response.text().replace(\"Email verification token: \", \"\").trim();",
+                  "pm.collectionVariables.set(\"emailVerificationToken\", token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Token Text",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Email verification token: sample-token"
+            }
+          ]
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/email-verification/verify?token=%7B%7BemailVerificationToken%7D%7D",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "email-verification",
+                "verify"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{emailVerificationToken}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Email verified\", function () { pm.expect(pm.response.text()).to.include(\"Email verified successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Verified",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Email verified successfully"
+            }
+          ]
+        },
+        {
+          "name": "Login User and Save JWT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"jwtToken\", json.token);",
+                  "pm.test(\"JWT saved\", function () { pm.expect(pm.collectionVariables.get(\"jwtToken\")).to.be.ok; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"jwt-token-here\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login Admin and Save Admin JWT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"adminToken\", json.token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"admin-jwt-token-here\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Validation - Missing Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Bad User\",\n  \"email\": \"\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Validation details exist\", function () { pm.expect(pm.response.json().details).to.have.property(\"email\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Password Reset Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/password-reset/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "password-reset",
+                "request"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Password reset token returned\", function () { pm.expect(pm.response.text()).to.include(\"Password reset token:\"); });",
+                  "const token = pm.response.text().replace(\"Password reset token: \", \"\").trim();",
+                  "pm.collectionVariables.set(\"passwordResetToken\", token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Token Text",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Password reset token: sample-token"
+            }
+          ]
+        },
+        {
+          "name": "Password Reset Confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/password-reset/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "password-reset",
+                "confirm"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"newPassword\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Password reset succeeded\", function () { pm.expect(pm.response.text()).to.include(\"Password reset successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Reset",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Password reset successfully"
+            }
+          ]
+        },
+        {
+          "name": "Login With New Password and Refresh JWT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"jwtToken\", json.token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"new-jwt-token-here\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"User email exists\", function () { pm.expect(pm.response.json().email).to.be.ok; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 User",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"fullName\": \"Postman Test User\",\n  \"email\": \"user@example.com\",\n  \"role\": \"USER\",\n  \"userStatus\": \"ACTIVE\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Profile",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"fullName\": \"Postman Test User\",\n  \"email\": \"user@example.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Updated Postman User\",\n  \"email\": \"{{updatedUserEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Profile was updated\", function () { const json = pm.response.json(); pm.expect(json.fullName).to.eql(\"Updated Postman User\"); pm.expect(json.email).to.eql(pm.collectionVariables.get(\"updatedUserEmail\")); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"fullName\": \"Updated Postman User\",\n  \"email\": \"updated@example.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Profile Validation - Bad Email",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Bad Email User\",\n  \"email\": \"not-an-email\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Upload Profile Picture",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile-picture",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile-picture"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Choose an image file in Postman before sending."
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Profile picture path returned\", function () { pm.expect(pm.response.json().profilePicture).to.include(\"/uploads/\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Uploaded",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"profilePicture\": \"/uploads/example.png\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "change-password"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{newPassword}}\",\n  \"newPassword\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Password changed\", function () { pm.expect(pm.response.text()).to.include(\"Password changed successfully\"); });",
+                  "pm.collectionVariables.set(\"newPassword\", pm.collectionVariables.get(\"password\"));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Changed",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Password changed successfully"
+            }
+          ]
+        },
+        {
+          "name": "Protected Route Without JWT - Error Case",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 401 or 403\", function () { pm.expect([401, 403]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Admin Deactivate User",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userIdToDeactivate}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{userIdToDeactivate}}",
+                "deactivate"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Set userIdToDeactivate manually before running this request."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"User is inactive\", function () { pm.expect(pm.response.json().userStatus).to.eql(\"INACTIVE\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Inactive",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2,\n  \"userStatus\": \"INACTIVE\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Dinner {{runSuffix}}\",\n  \"description\": \"Dinner recipes created from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"categoryId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Created",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Dinner\",\n  \"description\": \"Dinner recipes\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Breakfast\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Category By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Category",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Dinner\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "{{categoryId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Category {{runSuffix}}\",\n  \"description\": \"Updated from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Updated Category\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Category Validation - Missing Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"Invalid category\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Name validation exists\", function () { pm.expect(pm.response.json().details).to.have.property(\"name\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Deleted message\", function () { pm.expect(pm.response.text()).to.include(\"Category deleted successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Category deleted successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ingredients",
+      "item": [
+        {
+          "name": "Create Ingredient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Tomato {{runSuffix}}\",\n  \"unit\": \"piece\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"ingredientId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Created",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Tomato\",\n  \"unit\": \"piece\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Bulk Create Ingredients",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Chicken Breast {{runSuffix}}\",\n    \"unit\": \"gram\"\n  },\n  {\n    \"name\": \"Rice {{runSuffix}}\",\n    \"unit\": \"cup\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Bulk response is array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Bulk",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 2,\n    \"name\": \"Chicken Breast\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Tomato\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Ingredient By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Ingredient",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Tomato\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Ingredient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Ingredient {{runSuffix}}\",\n  \"unit\": \"gram\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Updated Ingredient\",\n  \"unit\": \"gram\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Ingredient Validation - Missing Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"unit\": \"cup\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Ingredient",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Deleted message\", function () { pm.expect(pm.response.text()).to.include(\"Ingredient deleted successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Ingredient deleted successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Chicken Bowl {{runSuffix}}\",\n  \"description\": \"A tested recipe\",\n  \"instructions\": \"Cook rice and chicken, then combine.\",\n  \"prepTime\": 15,\n  \"cookTime\": 25,\n  \"servings\": 4,\n  \"imageUrl\": \"\",\n  \"categoryId\": \"{{categoryId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"recipeId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Created",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Postman Chicken Bowl\",\n  \"status\": \"PENDING\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Bulk Create Recipes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "bulk"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"title\": \"Bulk Pancakes {{runSuffix}}\",\n    \"description\": \"Simple pancakes\",\n    \"instructions\": \"Mix and cook.\",\n    \"prepTime\": 10,\n    \"cookTime\": 10,\n    \"servings\": 2,\n    \"imageUrl\": \"\",\n    \"categoryId\": \"{{categoryId}}\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Bulk recipes array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Bulk",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 2,\n    \"title\": \"Bulk Pancakes\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create Recipe Without JWT - Error Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unauthorized Recipe\",\n  \"instructions\": \"No token\",\n  \"servings\": 1,\n  \"categoryId\": \"{{categoryId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 401 or 403\", function () { pm.expect([401, 403]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Add Ingredient To Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"recipeIngredientId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Added",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"quantity\": 2.5\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Recipe Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/ingredients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "ingredients"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Update Recipe Ingredient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{recipeIngredientId}}/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "ingredients",
+                "{{recipeIngredientId}}",
+                "{{ingredientId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"quantity\": 3\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Recipe Ingredient",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/ingredients/{{recipeIngredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "ingredients",
+                "{{recipeIngredientId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Recipe ingredient deleted successfully"
+            }
+          ]
+        },
+        {
+          "name": "List Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Recipe\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Recipes Paged",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/paged?page=0&size=5&sortBy=createdAt&direction=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "paged"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "direction",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Paged response has content\", function () { pm.expect(pm.response.json()).to.have.property(\"content\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Page",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"content\": [],\n  \"totalElements\": 0,\n  \"totalPages\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Recipe By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Recipe",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Recipe\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Postman Recipe {{runSuffix}}\",\n  \"description\": \"Updated description\",\n  \"instructions\": \"Cook again.\",\n  \"prepTime\": 20,\n  \"cookTime\": 30,\n  \"servings\": 5,\n  \"imageUrl\": \"\",\n  \"categoryId\": \"{{categoryId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Updated Postman Recipe\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Recipe Validation - Missing Title",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"instructions\": \"Cook.\",\n  \"prepTime\": 1,\n  \"cookTime\": 1,\n  \"servings\": 1,\n  \"categoryId\": \"{{categoryId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search?keyword=Postman",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "Postman"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Search",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Search Recipes Paged",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/search/paged?keyword=Postman&page=0&size=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "search",
+                "paged"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "Postman"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Search Page",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"content\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Filter Recipes By Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/category/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "category",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Filter",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Update Recipe Visibility",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/visibility?isPublic=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "visibility"
+              ],
+              "query": [
+                {
+                  "key": "isPublic",
+                  "value": "true"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Visibility",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"isPublic\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Upload Recipe Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipes",
+                "{{recipeId}}",
+                "image"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Choose an image file in Postman before sending."
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Image URL saved\", function () { pm.expect(pm.response.json().imageUrl).to.include(\"/uploads/\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Uploaded",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"imageUrl\": \"/uploads/example.png\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Admin - Pending Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recipes/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recipes",
+                "pending"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Pending",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Admin - Approve Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recipes/{{recipeId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recipes",
+                "{{recipeId}}",
+                "approve"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Recipe approved\", function () { pm.expect(pm.response.json().status).to.eql(\"APPROVED\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Approved",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"status\": \"APPROVED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Admin Route With User JWT - Error Case",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recipes/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recipes",
+                "pending"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Admin - Delete Any Recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recipes",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Admin delete message\", function () { pm.expect(pm.response.text()).to.include(\"Recipe deleted by admin successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Recipe deleted by admin successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Favorites",
+      "item": [
+        {
+          "name": "Add Favorite",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorites/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"favoriteId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Favorite",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "List My Favorites",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Favorites Without JWT - Error Case",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 401 or 403\", function () { pm.expect([401, 403]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Delete Favorite",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorites/{{favoriteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "{{favoriteId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Deleted message\", function () { pm.expect(pm.response.text()).to.include(\"Favorite deleted successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Favorite deleted successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/comments/recipe/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "recipe",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commentText\": \"This recipe looks great!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"commentId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Comment",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"commentText\": \"This recipe looks great!\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Recipe Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/recipe/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "recipe",
+                "{{recipeId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commentText\": \"Updated comment from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"commentText\": \"Updated comment from Postman\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Comment Validation - Missing Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/comments/recipe/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "recipe",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commentText\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Deleted message\", function () { pm.expect(pm.response.text()).to.include(\"Comment deleted successfully\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Comment deleted successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Meal Plans",
+      "item": [
+        {
+          "name": "Create Meal Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Weekly Plan {{runSuffix}}\",\n  \"startDate\": \"2026-05-24\",\n  \"endDate\": \"2026-05-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"mealPlanId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Created",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Weekly Plan\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List My Meal Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Get Meal Plan By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans/{{mealPlanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans",
+                "{{mealPlanId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Meal Plan",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Weekly Plan\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Meal Plan",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans/{{mealPlanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans",
+                "{{mealPlanId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Weekly Plan {{runSuffix}}\",\n  \"startDate\": \"2026-05-25\",\n  \"endDate\": \"2026-06-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Updated Weekly Plan\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Meal Plan Validation - Missing Title",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"startDate\": \"2026-05-24\",\n  \"endDate\": \"2026-05-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Recipe To Meal Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plan-items/{{mealPlanId}}/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plan-items",
+                "{{mealPlanId}}",
+                "{{recipeId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plannedDate\": \"2026-05-24\",\n  \"mealType\": \"DINNER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"mealPlanItemId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Item",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"mealType\": \"DINNER\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Meal Plan Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plan-items/{{mealPlanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plan-items",
+                "{{mealPlanId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Items",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Delete Meal Plan Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plan-items/{{mealPlanItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plan-items",
+                "{{mealPlanItemId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Meal plan item deleted successfully"
+            }
+          ]
+        },
+        {
+          "name": "Delete Meal Plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meal-plans/{{mealPlanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal-plans",
+                "{{mealPlanId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Meal plan deleted successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shopping Lists",
+      "item": [
+        {
+          "name": "Create Shopping List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Shopping List {{runSuffix}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"shoppingListId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Created",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Shopping List\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List My Shopping Lists",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Get Shopping List By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists/{{shoppingListId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists",
+                "{{shoppingListId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Shopping List",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Shopping List\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Shopping List",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists/{{shoppingListId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists",
+                "{{shoppingListId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Shopping List {{runSuffix}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Updated Shopping List\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Shopping List Validation - Missing Title",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Shopping List Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-list-items/{{shoppingListId}}/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-list-items",
+                "{{shoppingListId}}",
+                "{{ingredientId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 4,\n  \"unit\": \"piece\",\n  \"isChecked\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"shoppingListItemId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Item",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"quantity\": 4,\n  \"unit\": \"piece\",\n  \"isChecked\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Shopping List Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-list-items/{{shoppingListId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-list-items",
+                "{{shoppingListId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Items",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[]"
+            }
+          ]
+        },
+        {
+          "name": "Update Shopping List Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-list-items/{{shoppingListItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-list-items",
+                "{{shoppingListItemId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5,\n  \"unit\": \"box\",\n  \"isChecked\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Item updated\", function () { pm.expect(pm.response.json().isChecked).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Updated",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"quantity\": 5,\n  \"unit\": \"box\",\n  \"isChecked\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Shopping List Item Validation - Negative Quantity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-list-items/{{shoppingListId}}/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-list-items",
+                "{{shoppingListId}}",
+                "{{ingredientId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": -1,\n  \"unit\": \"piece\",\n  \"isChecked\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 Validation",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2026-05-24T00:00:00\",\n  \"status\": 400,\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"field\": \"message\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Shopping List Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-list-items/{{shoppingListItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-list-items",
+                "{{shoppingListItemId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Shopping list item deleted successfully"
+            }
+          ]
+        },
+        {
+          "name": "Delete Shopping List",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists/{{shoppingListId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping-lists",
+                "{{shoppingListId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Deleted",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "Shopping list deleted successfully"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
