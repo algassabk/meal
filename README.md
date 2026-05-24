@@ -1,297 +1,156 @@
 # Meal API
 
-Recipe and Meal Prep Social Platform backend built with Spring Boot. The API supports users, recipes, ingredients, favorites, comments, meal plans, shopping lists, admin recipe approval, image upload, email verification tokens, password reset tokens, and Swagger documentation.
+Meal API is a Spring Boot backend project for managing recipes, ingredients, categories, comments, favorites, meal plans, shopping lists, and users.
 
-## Tech Stack
+The project uses PostgreSQL as the database and JWT authentication for protected endpoints.
+
+---
+
+## Technologies Used
 
 - Java 17
-- Spring Boot 4
+- Spring Boot
 - Spring Security
-- JWT authentication
-- Spring Data JPA / Hibernate
+- JWT
 - PostgreSQL
-- Lombok
-- Spring Validation
-- Springdoc OpenAPI / Swagger UI
-- Docker and Docker Compose
+- Spring Data JPA / Hibernate
+- Maven
+- Docker
+- Docker Compose
+- MockMvc
+- Swagger / OpenAPI
 
-## Features
+---
 
-- Register and login with JWT
-- Logged-in user change password
-- Current logged-in user profile
-- Categories CRUD
-- Ingredients CRUD
-- Recipes CRUD
-- Public recipe reads and protected recipe writes
-- Recipe search, category filter, pagination, and sorting
-- Recipe ingredients
-- Favorites
+## Main Features
+
+- Register and login
+- JWT authentication
+- Email verification
+- Forgot password / password reset
+- Change password
+- Update user profile
+- Upload profile picture
+- Upload recipe image
+- Recipe CRUD
+- Category CRUD
+- Ingredient CRUD
 - Comments
-- Meal plans and meal plan items
-- Shopping lists and shopping list items
-- Admin recipe pending list, approval, recipe delete, and user deactivate
-- Recipe image upload with static `/uploads/**` access
-- Email verification token flow
-- Password reset token flow
-- Global validation and runtime exception responses
-- Swagger/OpenAPI documentation
-- Spring profiles for local development and Docker
-- First-run seed data for categories, ingredients, and an admin user
+- Favorites
+- Meal plans
+- Shopping lists
+- Admin recipe approval
+- Admin user deactivation
+- Seed data
+- Docker support
+- API testing with MockMvc
 
-## Setup
+## API Endpoints Table
+| Method | Endpoint                                                              | Functionality                           | Access                             |
+| ------ | --------------------------------------------------------------------- | --------------------------------------- | ---------------------------------- |
+| POST   | `/auth/register`                                                      | Register a new user                     | Public                             |
+| POST   | `/auth/login`                                                         | Login and receive JWT token             | Public                             |
+| POST   | `/auth/email-verification/request`                                    | Request email verification token        | Public                             |
+| GET    | `/auth/email-verification/verify?token=...`                           | Verify user email                       | Public                             |
+| POST   | `/auth/password-reset/request`                                        | Request password reset token            | Public                             |
+| POST   | `/auth/password-reset/confirm`                                        | Confirm password reset                  | Public                             |
+| GET    | `/users/me`                                                           | Get current logged-in user              | Private                            |
+| GET    | `/users/profile`                                                      | Get user profile                        | Private                            |
+| PUT    | `/users/profile`                                                      | Update user profile                     | Private                            |
+| POST   | `/users/profile-picture`                                              | Upload profile picture                  | Private                            |
+| PUT    | `/users/change-password`                                              | Change user password                    | Private                            |
+| POST   | `/categories`                                                         | Create category                         | Public / Admin depending on config |
+| GET    | `/categories`                                                         | Get all categories                      | Public                             |
+| GET    | `/categories/{id}`                                                    | Get category by ID                      | Public                             |
+| PUT    | `/categories/{id}`                                                    | Update category                         | Public / Admin depending on config |
+| DELETE | `/categories/{id}`                                                    | Delete category                         | Public / Admin depending on config |
+| POST   | `/ingredients`                                                        | Create ingredient                       | Public / Admin depending on config |
+| POST   | `/ingredients/bulk`                                                   | Create many ingredients                 | Public / Admin depending on config |
+| GET    | `/ingredients`                                                        | Get all ingredients                     | Public                             |
+| GET    | `/ingredients/{id}`                                                   | Get ingredient by ID                    | Public                             |
+| PUT    | `/ingredients/{id}`                                                   | Update ingredient                       | Public / Admin depending on config |
+| DELETE | `/ingredients/{id}`                                                   | Delete ingredient                       | Public / Admin depending on config |
+| POST   | `/recipes`                                                            | Create recipe                           | Private                            |
+| POST   | `/recipes/bulk`                                                       | Create many recipes                     | Private                            |
+| GET    | `/recipes`                                                            | Get all recipes                         | Public                             |
+| GET    | `/recipes/paged`                                                      | Get paged recipes                       | Public                             |
+| GET    | `/recipes/{id}`                                                       | Get recipe by ID                        | Public                             |
+| PUT    | `/recipes/{id}`                                                       | Update recipe                           | Private                            |
+| DELETE | `/recipes/{id}`                                                       | Delete recipe                           | Private                            |
+| GET    | `/recipes/search?keyword=...`                                         | Search recipes                          | Public                             |
+| GET    | `/recipes/search/paged?keyword=...`                                   | Search recipes with pagination          | Public                             |
+| GET    | `/recipes/category/{categoryId}`                                      | Get recipes by category                 | Public                             |
+| GET    | `/recipes/category/{categoryId}/paged`                                | Get recipes by category with pagination | Public                             |
+| PUT    | `/recipes/{id}/visibility?isPublic=true`                              | Update recipe visibility                | Private                            |
+| POST   | `/recipes/{id}/image`                                                 | Upload recipe image                     | Private                            |
+| POST   | `/recipes/{recipeId}/ingredients/{ingredientId}`                      | Add ingredient to recipe                | Private                            |
+| GET    | `/recipes/{recipeId}/ingredients`                                     | Get recipe ingredients                  | Public                             |
+| PUT    | `/recipes/{recipeId}/ingredients/{recipeIngredientId}/{ingredientId}` | Update recipe ingredient                | Private                            |
+| DELETE | `/recipes/{recipeId}/ingredients/{recipeIngredientId}`                | Delete recipe ingredient                | Private                            |
+| POST   | `/favorites/{recipeId}`                                               | Add recipe to favorites                 | Private                            |
+| GET    | `/favorites`                                                          | Get user favorites                      | Private                            |
+| DELETE | `/favorites/{favoriteId}`                                             | Remove favorite                         | Private                            |
+| POST   | `/comments/recipe/{recipeId}`                                         | Add comment to recipe                   | Private                            |
+| GET    | `/comments/recipe/{recipeId}`                                         | Get recipe comments                     | Public                             |
+| PUT    | `/comments/{commentId}`                                               | Update comment                          | Private                            |
+| DELETE | `/comments/{commentId}`                                               | Delete comment                          | Private                            |
+| POST   | `/meal-plans`                                                         | Create meal plan                        | Private                            |
+| GET    | `/meal-plans`                                                         | Get user meal plans                     | Private                            |
+| GET    | `/meal-plans/{id}`                                                    | Get meal plan by ID                     | Private                            |
+| PUT    | `/meal-plans/{id}`                                                    | Update meal plan                        | Private                            |
+| DELETE | `/meal-plans/{id}`                                                    | Delete meal plan                        | Private                            |
+| POST   | `/meal-plan-items/{mealPlanId}/{recipeId}`                            | Add recipe to meal plan                 | Private                            |
+| GET    | `/meal-plan-items/{mealPlanId}`                                       | Get meal plan items                     | Private                            |
+| DELETE | `/meal-plan-items/{mealPlanItemId}`                                   | Delete meal plan item                   | Private                            |
+| POST   | `/shopping-lists`                                                     | Create shopping list                    | Private                            |
+| GET    | `/shopping-lists`                                                     | Get user shopping lists                 | Private                            |
+| GET    | `/shopping-lists/{id}`                                                | Get shopping list by ID                 | Private                            |
+| PUT    | `/shopping-lists/{id}`                                                | Update shopping list                    | Private                            |
+| DELETE | `/shopping-lists/{id}`                                                | Delete shopping list                    | Private                            |
+| POST   | `/shopping-list-items/{shoppingListId}/{ingredientId}`                | Add item to shopping list               | Private                            |
+| GET    | `/shopping-list-items/{shoppingListId}`                               | Get shopping list items                 | Private                            |
+| PUT    | `/shopping-list-items/{shoppingListItemId}`                           | Update shopping list item               | Private                            |
+| DELETE | `/shopping-list-items/{shoppingListItemId}`                           | Delete shopping list item               | Private                            |
+| GET    | `/admin/recipes/pending`                                              | View pending recipes                    | Admin                              |
+| PUT    | `/admin/recipes/{id}/approve`                                         | Approve recipe                          | Admin                              |
+| DELETE | `/admin/recipes/{id}`                                                 | Delete recipe as admin                  | Admin                              |
+| PUT    | `/admin/users/{id}/deactivate`                                        | Soft delete / deactivate user           | Admin                              |
 
-Create a PostgreSQL database:
 
-```sql
-CREATE DATABASE meal_db;
-```
+---
 
-Common settings are in `src/main/resources/application.properties`.
+## User Roles
 
-Local development database settings are in `src/main/resources/application-dev.properties`:
+### USER
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/meal_db
-spring.datasource.username=postgres
-spring.datasource.password=12345678
-```
+A normal user can:
 
-Docker database settings are in `src/main/resources/application-docker.properties`. Docker Compose sets:
+- Create recipes
+- View recipes
+- Add comments
+- Save favorite recipes
+- Create meal plans
+- Create shopping lists
+- Update profile
+- Change password
 
-```properties
-SPRING_PROFILES_ACTIVE=docker
-```
+### ADMIN
 
-The app uses the `dev` profile by default:
+An admin can:
 
-```properties
-spring.profiles.active=dev
-spring.jpa.hibernate.ddl-auto=update
-server.port=8080
-```
+- View pending recipes
+- Approve recipes
+- Delete recipes
+- Deactivate users
 
-Update these values if your local PostgreSQL username or password is different.
+---
 
 ## Seed Data
 
-On first run, the app seeds:
+When the project runs for the first time, it seeds basic data such as categories, ingredients, and an admin user.
 
-- Categories: Breakfast, Lunch, Dinner
-- Ingredients: Rice, Chicken, Tomato
-- Admin user:
-  - Email: `admin@meal.com`
-  - Password: `admin123`
-
-This is for local capstone testing only.
-
-## Run Locally
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-The API runs at:
+Seeded admin account:
 
 ```text
-http://localhost:8080
-```
-
-Swagger UI:
-
-```text
-http://localhost:8080/swagger-ui.html
-```
-
-OpenAPI JSON:
-
-```text
-http://localhost:8080/v3/api-docs
-```
-
-## React Frontend
-
-A simple React/Vite frontend is available in the `frontend` folder.
-
-Start the backend first:
-
-```powershell
-cd C:\Users\algas\jdb\projects\meal
-.\mvnw.cmd spring-boot:run
-```
-
-Start the frontend:
-
-```powershell
-cd C:\Users\algas\jdb\projects\meal\frontend
-npm install
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-The frontend uses a Vite proxy, so API calls go from `/api` to `http://localhost:8080`. Login stores the JWT token in `localStorage`, and protected requests send it in the `Authorization` header.
-
-## Test
-
-Run unit/context tests:
-
-```powershell
-.\mvnw.cmd test
-```
-
-With the app running, run the full API smoke test:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\api-smoke-test.ps1
-```
-
-The smoke test registers users, creates data, tests protected/admin routes, verifies email/password token flows, uploads an image, checks Swagger, and deletes created records.
-
-## Docker
-
-Check the Docker Compose file:
-
-```powershell
-docker compose config --quiet
-```
-
-Run PostgreSQL and the app:
-
-```powershell
-docker compose up --build
-```
-
-Stop containers:
-
-```powershell
-docker compose down
-```
-
-Uploaded images are stored in the local `uploads/` folder and mounted into the app container.
-
-## Main Endpoints
-
-Auth:
-
-- `POST /auth/register`
-- `POST /auth/login`
-- `POST /auth/email-verification/request`
-- `GET /auth/email-verification/verify?token=...`
-- `POST /auth/password-reset/request`
-- `POST /auth/password-reset/confirm`
-
-Users:
-
-- `GET /users/me`
-- `GET /users/profile`
-- `PUT /users/change-password`
-
-Categories:
-
-- `POST /categories`
-- `GET /categories`
-- `GET /categories/{id}`
-- `PUT /categories/{id}`
-- `DELETE /categories/{id}`
-
-Recipes:
-
-- `POST /recipes`
-- `GET /recipes`
-- `GET /recipes/paged`
-- `GET /recipes/{id}`
-- `PUT /recipes/{id}`
-- `DELETE /recipes/{id}`
-- `GET /recipes/search?keyword=...`
-- `GET /recipes/search/paged?keyword=...`
-- `GET /recipes/category/{categoryId}`
-- `GET /recipes/category/{categoryId}/paged`
-- `PUT /recipes/{id}/visibility?isPublic=true`
-- `POST /recipes/{id}/image`
-
-Ingredients:
-
-- `POST /ingredients`
-- `GET /ingredients`
-- `GET /ingredients/{id}`
-- `PUT /ingredients/{id}`
-- `DELETE /ingredients/{id}`
-
-Recipe ingredients:
-
-- `POST /recipes/{recipeId}/ingredients/{ingredientId}`
-- `GET /recipes/{recipeId}/ingredients`
-- `PUT /recipes/{recipeId}/ingredients/{recipeIngredientId}/{ingredientId}`
-- `DELETE /recipes/{recipeId}/ingredients/{recipeIngredientId}`
-
-Favorites:
-
-- `POST /favorites/{recipeId}`
-- `GET /favorites`
-- `DELETE /favorites/{favoriteId}`
-
-Comments:
-
-- `POST /comments/recipe/{recipeId}`
-- `GET /comments/recipe/{recipeId}`
-- `PUT /comments/{commentId}`
-- `DELETE /comments/{commentId}`
-
-Meal plans:
-
-- `POST /meal-plans`
-- `GET /meal-plans`
-- `GET /meal-plans/{id}`
-- `PUT /meal-plans/{id}`
-- `DELETE /meal-plans/{id}`
-
-Meal plan items:
-
-- `POST /meal-plan-items/{mealPlanId}/{recipeId}`
-- `GET /meal-plan-items/{mealPlanId}`
-- `DELETE /meal-plan-items/{mealPlanItemId}`
-
-Shopping lists:
-
-- `POST /shopping-lists`
-- `GET /shopping-lists`
-- `GET /shopping-lists/{id}`
-- `PUT /shopping-lists/{id}`
-- `DELETE /shopping-lists/{id}`
-
-Shopping list items:
-
-- `POST /shopping-list-items/{shoppingListId}/{ingredientId}`
-- `GET /shopping-list-items/{shoppingListId}`
-- `PUT /shopping-list-items/{shoppingListItemId}`
-- `DELETE /shopping-list-items/{shoppingListItemId}`
-
-Admin:
-
-- `GET /admin/recipes/pending`
-- `PUT /admin/recipes/{id}/approve`
-- `DELETE /admin/recipes/{id}`
-- `PUT /admin/users/{id}/deactivate`
-
-## Auth Notes
-
-- Public: auth routes, category routes, ingredient routes, recipe GET routes, comment GET routes, uploaded files, Swagger/OpenAPI.
-- Requires JWT: user routes, recipe write routes, favorites, comment writes, meal plans, meal plan items, shopping lists, shopping list items.
-- Requires ADMIN role: `/admin/**`.
-
-For local admin testing, register a user and update the database role:
-
-```sql
-UPDATE users SET role = 'ADMIN' WHERE email = 'admin@example.com';
-```
-
-You can also use the seeded admin user:
-
-```text
-admin@meal.com / admin123
-```
+Email: admin@meal.com
+Password: admin123
